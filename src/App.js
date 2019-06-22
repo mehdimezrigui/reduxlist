@@ -1,26 +1,57 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { getcontact } from "./action/Action";
+import "./App.css";
+import AddContact from "./components/AddContact";
+import Contact from "./components/Contact";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+  }
+  componentDidMount = () => {
+    this.props.getContact();
+  };
+  render() {
+    console.log(this.props.contact);
+    return (
+      <Router>
+        <div className="App">
+          <Link to="/add-contact">
+            <button> addcontact</button>
+          </Link>
+          <Link to="/">
+            <button> Home</button>
+          </Link>
+          {/* {this.props.contact.map(el => <div><h3>{el.name}</h3><h3>{el.phone}</h3><h3>{el.mail}</h3></div>)} */}
+        </div>
+        <Route
+          exact
+          path="/"
+          render={() => (
+            <div >
+              <h1>Contact List</h1>
+              <div className="list">
+              {this.props.contact.map(el => (
+                <Contact info={el} />
+              ))}
+              </div>
+            </div>
+          )}
+        />
+        <Route path="/add-contact" render={() => <AddContact />} />
+      </Router>
+    );
+  }
 }
-
-export default App;
+const mapStateToProps = state => ({ contact: state });
+const mapDispatchToProps = dispatch => ({
+  getContact: () => dispatch(getcontact())
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
